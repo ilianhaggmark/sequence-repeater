@@ -14,6 +14,11 @@ Working GUI. Can perform 4 actions:
 	Sleep
 	Insert formatted string.
 
+0.2.0
+
+Added 1 action:
+
+	Right click
 
 
 # executable
@@ -25,5 +30,5 @@ Executable files (.exe) are available for Sequence Repeater. It is bundled using
 
 Reduce executable size.
 
-Add right click as possible action.
+Handle errors better.
 

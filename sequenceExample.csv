@@ -1,0 +1,7 @@
+Iterations,3,Actions,5
+#,X,Y,Value
+click,638,134,
+sleep,638,134,1
+rclick,793,360,
+sleep,793,360,1
+click,508,458,

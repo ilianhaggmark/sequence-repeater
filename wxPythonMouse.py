@@ -11,7 +11,7 @@ from wx.lib.intctrl import IntCtrl
 
 import csv
 
-import pyautogui, time# sys
+import pyautogui, time # sys
 from pynput.keyboard import Key, Listener
 
 import contextlib
@@ -162,16 +162,22 @@ class MyFrame(wx.Frame):
 
     def on_howtouse(self, e):
         wx.MessageBox("How to use Sequence Repeater \n\n"
-            "4 types of events can be set up in a sequence, click, sleep, intpr, and double click. "
-           "All can take input in the form of a string called 'value'. click, double click, and intpr will simply print the input "
-           "at the location and sleep's value specifies the time to sleep in seconds (1 s by default). \n\n"
+            "5 types of events can be set up in a sequence, \n\n "
+           "left click, right click, sleep, intpr, and double click. \n\n"
+           "All can take input in the form of a string called 'value'. "
+           "left click, double click, and intpr will simply print the input "
+           "at the location and sleep's value specifies the time to sleep in "
+           "seconds (1 s by default). \n\n"
            "intpr can interpret a formatted string on the form f'your-string' "
            "to enable different values for each iteration 'i'. The string "
            "should typically be something like f'img2_{100*i:05}'. This gives "
            "the sequence img2_00000 img2_00100 img2_00200 etc. "
-           "To get an offset one can also use f'img{20+i:04}' which gives img0020 img0021 img 0022 etc. \n\n"
-           "The four events are triggered by left arrow (click), down arrow (sleep) "
-           "up arrow (intpr) and right arrow (double click). Click on each row label to set mouse position or set all by "
+           "To get an offset one can also use f'img{20+i:04}' which gives "
+           "img0020 img0021 img 0022 etc. \n\n"
+           "The five events are triggered by left arrow (left click), "
+           "right arrow (right click), up arrow (double click), "
+           "down arrow (sleep), and ctrl (intpr). Double click on each row "
+           "label to set mouse position, write in the fields or set all by "
            "pressing Set Pos", caption='About Sequence Repeater', style=wx.CENTRE)    
     
     def on_cleartable(self, e):
@@ -202,7 +208,8 @@ class MyFrame(wx.Frame):
         error = 0
         for row in range(self.r):
             action = self.myGrid.GetCellValue(row, 0)
-            if action != 'click' and action != 'dclick' and action != 'intpr' and action != 'sleep' and action != '':
+            if action != 'click' and action != 'dclick' and action != 'intpr'\
+            and action != 'sleep' and action != 'rclick' and action != '':
                 error = 1
         if error == 1:
             self.statusbar.SetStatusText('Error in action input',1)        
@@ -278,7 +285,9 @@ class MyFrame(wx.Frame):
             pass
         
         def on_press(key):
-            if(key == Key.left or key == Key.right or key == Key.down or key == Key.up):    
+            print(key)
+            if(key == Key.left or key == Key.right or key == Key.down\
+               or key == Key.up or key == Key.ctrl_r or key == Key.ctrl_l):    
                 x, y = pyautogui.position()
                 if key == Key.left:
                     tempRow = ['click',str(x),str(y),'']
@@ -286,7 +295,7 @@ class MyFrame(wx.Frame):
                         self.myGrid.SetCellValue(self.j, col,"%s" % (tempRow[col]))
                     print('%d of %d actions set' % (self.j+1,self.r)) 
                 if key == Key.right:
-                    tempRow = ['dclick',str(x),str(y),'']
+                    tempRow = ['rclick',str(x),str(y),'']
                     for col in range(4):
                         self.myGrid.SetCellValue(self.j, col,"%s" % (tempRow[col])) 
                     print('%d of %d actions set' % (self.j+1,self.r))
@@ -296,21 +305,27 @@ class MyFrame(wx.Frame):
                         self.myGrid.SetCellValue(self.j, col,"%s" % (tempRow[col]))                  
                     print('%d of %d actions set' % (self.j+1,self.r))
                 if key == Key.up:
+                    tempRow = ['dclick',str(x),str(y),'']
+                    for col in range(4):
+                        self.myGrid.SetCellValue(self.j, col,"%s" % (tempRow[col]))                  
+                    print('%d of %d actions set' % (self.j+1,self.r))                    
+                if (key == Key.ctrl_l or key == Key.ctrl_r):
                     tempRow = ['intpr',str(x),str(y),'']
                     for col in range(4):
                         self.myGrid.SetCellValue(self.j, col,"%s" % (tempRow[col]))                  
-                        print('%d of %d actions set' % (self.j+1,self.r))                    
-
+                    print('%d of %d actions set' % (self.j+1,self.r))  
                         
                 return False
             if(key == Key.esc):
-                raise SetPosInterrupted  
+                raise SetPosInterrupted
+            else:
+                print('Else')
         
         if oneRow == False:
             for i in range(self.r):       
                 pg.init()
                 pg.quit()  
-        
+
                 self.j = i
                 try:
                     with Listener(on_press=on_press) as listener:
@@ -323,7 +338,7 @@ class MyFrame(wx.Frame):
         else: 
             pg.init()
             pg.quit()  
-        
+
             self.j = k
             try:
                 with Listener(on_press=on_press) as listener:
@@ -364,6 +379,15 @@ class MyFrame(wx.Frame):
                          print('entered number')
                      else:                     
                          print('double click')
+                         
+                 elif action == 'rclick':
+                     pyautogui.click(x=int(x), y=int(y),button='right')
+                     time.sleep(0.1)
+                     #if value != '':
+                     #    pyautogui.typewrite(value, interval=0.02)
+                     #    print('entered number')
+                     #else:                     
+                     print('right click')                               
                          
                  elif action == 'intpr':
                      pyautogui.click(x=int(x), y=int(y),button='left')
